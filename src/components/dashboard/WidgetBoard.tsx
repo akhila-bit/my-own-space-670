@@ -10,6 +10,9 @@ import { InterviewChallenge } from "@/components/widgets/InterviewChallenge";
 import { LaggingIndicators } from "@/components/widgets/LaggingIndicators";
 import { MyProjects } from "@/components/widgets/MyProjects";
 import { ClockGreeting } from "@/components/widgets/ClockGreeting";
+import { PricingSim } from "@/components/widgets/PricingSim";
+import { AnomalySpotter } from "@/components/widgets/AnomalySpotter";
+import { CreditScorecard } from "@/components/widgets/CreditScorecard";
 
 const DEFAULT_WIDGETS: WidgetInstance[] = [
   { id: "w-clock", type: "clock" },
@@ -29,6 +32,9 @@ const META: Record<WidgetType, { title: string; subtitle?: string; accent?: bool
   essentialsVsExpertise: { title: "Essentials vs expertise" },
   laggingIndicators: { title: "Lagging indicators", subtitle: "From your answers" },
   projects: { title: "My projects", subtitle: "One-line cards" },
+  pricingSim: { title: "Pricing elasticity sim", subtitle: "Slider · ecomm", accent: true },
+  anomalySpotter: { title: "Anomaly spotter", subtitle: "Click the spike", accent: true },
+  creditScorecard: { title: "Credit risk scorecard", subtitle: "Weights · fintech", accent: true },
 };
 
 function renderWidget(type: WidgetType) {
@@ -40,6 +46,9 @@ function renderWidget(type: WidgetType) {
     case "essentialsVsExpertise": return <EssentialsVsExpertise />;
     case "laggingIndicators": return <LaggingIndicators />;
     case "projects": return <MyProjects />;
+    case "pricingSim": return <PricingSim />;
+    case "anomalySpotter": return <AnomalySpotter />;
+    case "creditScorecard": return <CreditScorecard />;
   }
 }
 
