@@ -56,4 +56,40 @@ export const SKILL_LADDER: Record<string, Ladder> = {
     essentials: ["models/ folder", "ref() and source()", "Schema tests", "Materializations (view/table)", "dbt run vs dbt build"],
     expertise: ["Incremental models + merge", "Snapshots", "Macros and Jinja", "Exposures and lineage", "CI for dbt PRs"],
   },
+  ds: {
+    essentials: ["Array vs linked list", "Hash map O(1) lookup", "Stack / queue", "Sets for dedup", "Tree basics"],
+    expertise: ["Heaps for top-K", "Tries for prefix search", "Skip lists / B-trees", "Bloom filters", "Graph traversal (BFS/DFS)"],
+  },
+  algo: {
+    essentials: ["O(n) vs O(n²)", "Sorting cost", "Binary search", "Recursion vs iteration", "Greedy intuition"],
+    expertise: ["Hash vs sort-merge join Big-O", "Dynamic programming", "Streaming / online algorithms", "Approximate counting (HLL)", "Complexity of window funcs"],
+  },
+  db: {
+    essentials: ["Tables, keys, FKs", "Normalization 1NF→3NF", "Index basics", "Transactions / ACID", "OLTP vs OLAP"],
+    expertise: ["Index selectivity & covering", "Star vs snowflake schema", "MVCC and isolation levels", "Sharding & partitioning", "Query plans / EXPLAIN"],
+  },
+  econ: {
+    essentials: ["Nominal vs real", "Inflation vs deflation", "CPI basket", "YoY vs MoM", "Seasonality"],
+    expertise: ["Deflating series by CPI", "PPI vs CPI", "Core vs headline inflation", "Real wage analysis", "Index reweighting"],
+  },
+  kpi: {
+    essentials: ["Leading vs lagging", "North Star metric", "Ratio vs absolute", "Numerator/denominator hygiene", "Vanity traps"],
+    expertise: ["Metric trees", "Guardrails & counters", "Goodhart's law mitigation", "Metric instrumentation specs", "Driver decomposition"],
+  },
+  fe: {
+    essentials: ["Standardize (μ=0, σ=1)", "One-hot vs label encode", "Handle missing values", "Train/test split", "Median for skewed features"],
+    expertise: ["Target encoding out-of-fold", "Avoid target leakage", "Feature selection (MI, L1)", "Interaction features", "RobustScaler for outliers"],
+  },
+  pricing: {
+    essentials: ["Demand curve intuition", "Elasticity sign & magnitude", "Margin = price − unit cost", "Revenue ≠ profit", "Promo lift vs cannibalization"],
+    expertise: ["Constant-elasticity models", "Revenue-max at |ε|=1", "Profit-max with marginal cost", "Price tests & holdouts", "Willingness-to-pay surveys"],
+  },
+  anomaly: {
+    essentials: ["Rolling mean / std", "Z-score thresholds", "Seasonality awareness", "YoY comparison", "Tracking-break check"],
+    expertise: ["STL decomposition", "Robust z (MAD)", "Changepoint detection", "Prophet / ARIMA residuals", "Alert noise tuning"],
+  },
+  credit: {
+    essentials: ["DTI ratio", "Credit utilization", "Tenure / age of credit", "Approval vs default tradeoff", "Threshold tuning"],
+    expertise: ["Logistic regression scorecards", "WOE / IV feature prep", "Reject inference", "Population stability (PSI)", "Adverse-action reasoning"],
+  },
 };

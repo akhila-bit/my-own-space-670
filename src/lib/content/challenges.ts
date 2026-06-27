@@ -125,4 +125,103 @@ export const CHALLENGES: Challenge[] = [
     modelAnswer:
       "Columnar stores bill by bytes scanned per column. SELECT * reads every column, defeating column pruning and inflating cost.",
   },
+  {
+    id: "ds-1",
+    skill: "ds",
+    question: "You need O(1) average lookups by user_id. Hash map or B-tree index, and why?",
+    expectedKeywords: ["hash", "o(1)", "b-tree", "range", "ordered", "average"],
+    lagIndicatorTopic: "Hash vs tree lookups",
+    modelAnswer:
+      "Hash map for O(1) average point lookups. B-tree wins when you also need range scans or ordered iteration (e.g. BETWEEN, ORDER BY).",
+  },
+  {
+    id: "algo-1",
+    skill: "algo",
+    question: "Why is a hash join O(n+m) typically faster than a nested-loop join on large tables?",
+    expectedKeywords: ["nested", "o(n*m)", "hash", "o(n+m)", "build", "probe"],
+    lagIndicatorTopic: "Join algorithm Big-O",
+    modelAnswer:
+      "Nested loop is O(n*m) — scans inner table per outer row. Hash join builds a hash on one side O(n) then probes O(m), giving O(n+m). Sort-merge is O(n log n + m log m) and good when inputs are pre-sorted.",
+  },
+  {
+    id: "db-1",
+    skill: "db",
+    question: "What is index selectivity and why does it matter for query planners?",
+    expectedKeywords: ["selectivity", "distinct", "cardinality", "low", "high", "scan"],
+    lagIndicatorTopic: "Index selectivity",
+    modelAnswer:
+      "Selectivity = fraction of distinct rows an index returns. High-selectivity (many distinct values) indexes are useful; low-selectivity ones (e.g. boolean) are often ignored — the planner picks a full scan instead.",
+  },
+  {
+    id: "db-2",
+    skill: "db",
+    question: "Why denormalize for an analytics warehouse instead of keeping 3NF like an OLTP DB?",
+    expectedKeywords: ["oltp", "olap", "join", "read", "wide", "denormal"],
+    lagIndicatorTopic: "OLTP vs OLAP modeling",
+    modelAnswer:
+      "OLTP optimizes writes via normalization. OLAP optimizes reads: wide denormalized / star-schema tables minimize joins and let columnar engines prune columns. Storage is cheap; query latency isn't.",
+  },
+  {
+    id: "econ-1",
+    skill: "econ",
+    question: "Revenue grew 6% YoY but CPI was 8%. Did the business actually grow?",
+    expectedKeywords: ["real", "nominal", "inflation", "cpi", "deflate", "shrank"],
+    lagIndicatorTopic: "Nominal vs real growth",
+    modelAnswer:
+      "No — in real terms revenue shrank ~2%. Nominal growth (6%) ignores inflation; deflate by CPI (8%) to get real growth ≈ −2%.",
+  },
+  {
+    id: "econ-2",
+    skill: "econ",
+    question: "What does CPI measure, and why are basket weights important?",
+    expectedKeywords: ["basket", "weight", "consumer", "price", "index", "representative"],
+    lagIndicatorTopic: "CPI mechanics",
+    modelAnswer:
+      "CPI tracks the price of a representative consumer basket over time. Weights reflect spend share, so housing/food moves CPI more than minor categories. Wrong weights → biased inflation reading.",
+  },
+  {
+    id: "kpi-1",
+    skill: "kpi",
+    question: "Distinguish a leading vs lagging indicator with one ecomm example each.",
+    expectedKeywords: ["leading", "lagging", "predict", "outcome", "cart", "revenue"],
+    lagIndicatorTopic: "Leading vs lagging KPIs",
+    modelAnswer:
+      "Leading predicts future outcomes (add-to-cart rate, signups). Lagging confirms past outcomes (revenue, churn). Steer with leading, judge with lagging.",
+  },
+  {
+    id: "kpi-2",
+    skill: "kpi",
+    question: "What makes a metric a 'vanity metric' and how do you replace it?",
+    expectedKeywords: ["vanity", "actionable", "decision", "engagement", "depth", "outcome"],
+    lagIndicatorTopic: "Vanity metric traps",
+    modelAnswer:
+      "Vanity metrics (pageviews, signups, followers) trend up regardless of value. Replace with actionable, ratio/depth metrics tied to a decision: activation rate, paid conversion, D7 retention.",
+  },
+  {
+    id: "fe-1",
+    skill: "fe",
+    question: "Why standardize features to mean=0, std=1 before fitting a linear or distance-based model?",
+    expectedKeywords: ["scale", "mean", "std", "gradient", "distance", "regulariz"],
+    lagIndicatorTopic: "Feature scaling",
+    modelAnswer:
+      "Distance and gradient methods are scale-sensitive: a large-range feature dominates. Standardizing (mean=0, std=1) puts features on equal footing, speeds convergence, and makes L1/L2 regularization fair.",
+  },
+  {
+    id: "fe-2",
+    skill: "fe",
+    question: "You use the target to compute a feature (e.g. mean revenue per category) on the full dataset. What's wrong?",
+    expectedKeywords: ["leakage", "target", "train", "test", "fold", "out-of-fold"],
+    lagIndicatorTopic: "Target leakage",
+    modelAnswer:
+      "Target leakage — test rows influenced the feature, inflating validation scores. Compute target encodings out-of-fold or only on the training partition.",
+  },
+  {
+    id: "fe-3",
+    skill: "fe",
+    question: "Skewed income with extreme outliers. Centre by mean or median? Why?",
+    expectedKeywords: ["median", "robust", "outlier", "skew", "mean", "iqr"],
+    lagIndicatorTopic: "Robust centering",
+    modelAnswer:
+      "Median — it's robust to outliers. Mean is pulled by the long tail. Pair with IQR scaling (RobustScaler) for the same reason.",
+  },
 ];

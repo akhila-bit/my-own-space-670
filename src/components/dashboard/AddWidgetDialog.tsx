@@ -10,11 +10,15 @@ const CATALOG: { type: WidgetType; name: string; desc: string }[] = [
   { type: "laggingIndicators", name: "Lagging Indicators", desc: "Weak topics surfaced from your answers." },
   { type: "projects", name: "My Projects", desc: "One-line project cards you can edit." },
   { type: "clock", name: "Clock + Greeting", desc: "Time and a tailored hello." },
+  { type: "pricingSim", name: "Pricing Elasticity Sim", desc: "Ecomm: slider, live revenue & profit, typed rationale." },
+  { type: "anomalySpotter", name: "Anomaly Spotter", desc: "Click the spike in a 30-day revenue series + name the cause." },
+  { type: "creditScorecard", name: "Credit Risk Scorecard", desc: "Fintech: weight sliders, approval & default tradeoff." },
 ];
 
 export function AddWidgetDialog({ existing, onAdd }: { existing: WidgetType[]; onAdd: (t: WidgetType) => void }) {
   const [open, setOpen] = useState(false);
-  const available = CATALOG.filter((c) => !existing.includes(c.type) || c.type === "projects" || c.type === "thought" || c.type === "challenge");
+  const reAddable: WidgetType[] = ["projects", "thought", "challenge", "pricingSim", "anomalySpotter", "creditScorecard"];
+  const available = CATALOG.filter((c) => !existing.includes(c.type) || reAddable.includes(c.type));
   return (
     <>
       <button

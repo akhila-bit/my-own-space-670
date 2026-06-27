@@ -63,7 +63,10 @@ export type WidgetType =
   | "challenge"
   | "laggingIndicators"
   | "projects"
-  | "clock";
+  | "clock"
+  | "pricingSim"
+  | "anomalySpotter"
+  | "creditScorecard";
 
 export type WidgetInstance = { id: string; type: WidgetType };
 
