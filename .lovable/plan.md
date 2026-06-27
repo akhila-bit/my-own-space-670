@@ -1,114 +1,52 @@
 
-# Data Analytics Portfolio Dashboard (iGoogle-style, no auth, no AI)
+## What I'll add
 
-A single-page iGoogle-style dashboard tailored to a **Data Analytics** profile. No sign-in, no backend AI calls. All content (in-demand skills, beginner→expert ladder, challenge questions, grading rules) is curated and shipped in the code. State lives in `localStorage`.
+### 3 new interactive widgets (fixed seeds)
 
-## Scope
+**1. Pricing Elasticity Sim** (`widgets/PricingSim.tsx`)
+- Seeded baseline: price $40, qty 1000, elasticity −1.4, unit cost $18.
+- Slider: price change −50%…+50%. Live readouts: new qty (constant-elasticity curve), revenue, gross profit, Δ vs baseline. Tiny ASCII/SVG revenue curve.
+- Challenge prompt: "What price maximizes revenue? Profit? Explain why they differ."
+- Typed answer → keyword grade (elasticity, marginal cost, |ε|>1, profit-max ≠ revenue-max). Feeds `progress`/`lags` under skill `pricing`.
 
-In:
-- Hardcoded Data Analytics knowledge base: in-demand skills, beginner-essentials vs expertise tiers, challenge-question bank with keyword-based grading
-- iGoogle-style board: add/remove/reorder widgets
-- User-editable project widgets (add/remove, one-line description, optional link)
-- Lagging-indicator detection from typed answers (which sub-topics the user fumbles → highlighted as gaps)
+**2. Anomaly Spotter** (`widgets/AnomalySpotter.tsx`)
+- Seeded 30-day revenue sparkline (deterministic noise + one injected anomaly per scenario; 3 rotatable scenarios picked by `scenarioIdx` in localStorage, default 0).
+- User clicks the day they think is anomalous, then types likely cause.
+- Grade: correct day (±1) = +50%, keyword match on cause (tracking, promo, outage, seasonality, holiday) = remainder. Skill `anomaly`.
 
-Out:
-- Auth, backend, database
-- AI gateway / LLM calls of any kind (per user request)
-- Resume PDF upload (replaced by curated DA profile)
-- Other professions — DA only for now
+**3. Credit Risk Scorecard** (`widgets/CreditScorecard.tsx`)
+- 4 weight sliders (income, DTI, utilization, tenure), sum auto-normalized to 1.
+- Seeded population of 200 applicants (deterministic). Live: approval rate, expected default rate, expected $ loss vs $ revenue (simple formulas).
+- Challenge: "Justify your weights. Which feature drives default most and why?"
+- Keyword grade (DTI, utilization, tenure, feature importance, tradeoff, threshold). Skill `credit`.
 
-## Stack
+### Challenge bank expansion (`lib/content/challenges.ts`)
 
-- TanStack Start (existing), client-only
-- `@dnd-kit/core` + `@dnd-kit/sortable` for drag-and-drop
-- `localStorage` for persistence
-- shadcn UI primitives already present
+Add new skills + questions covering the topics you listed:
 
-## Single route
+- **`ds` Data structures** — hash map vs btree for lookups; when to use a heap.
+- **`algo` Algorithm analysis** — Big-O of sort/scan/join; why O(n log n) joins beat nested loops.
+- **`db` Databases** — index selectivity; OLTP vs OLAP; normalization vs denormalization for analytics.
+- **`econ` Macro/CPI** — inflation vs deflation impact on nominal vs real revenue; what CPI measures; basket weights.
+- **`kpi` KPIs** — leading vs lagging indicator; North Star vs guardrail; vanity metrics.
+- **`fe` Feature engineering / selection** — why standardize (mean=0, std=1); when to use median (=0 after centering) over mean for skewed features; encoding categoricals; leakage; mutual information vs correlation for selection.
 
-- `/` — the dashboard. Header has profile name (editable inline), "+ Add widget" button, and a settings menu (reset layout, clear data).
+Each gets `expectedKeywords` + `modelAnswer` + `lagIndicatorTopic`, same pattern as today.
 
-## Curated content (`src/lib/content/`)
+Also register new skills in `lib/content/skills-in-demand.ts` (so the skill filter dropdown in Interview Challenge shows them) and add `essentials`/`expertise` rows in `skill-ladder.ts` for the new skills.
 
-- `skills-in-demand.ts` — ranked list of DA skills (SQL, Excel, Python/pandas, statistics, data viz/Tableau/Power BI, A/B testing, data storytelling, ETL basics, cloud warehouses, dbt) with short blurbs.
-- `skill-ladder.ts` — for each skill: `essentials` (beginner checklist) and `expertise` (advanced checklist), e.g. SQL essentials = SELECT/JOIN/GROUP BY; expertise = window functions, CTEs, query plans.
-- `challenges.ts` — bank of interview-style questions per skill. Each entry:
-  ```
-  { skill, question, expectedKeywords: string[], lagIndicatorTopic: string, modelAnswer }
-  ```
-  Grading = case-insensitive keyword coverage. Coverage ≥ 70% = pass, 40–70% = partial (logged as soft lag), <40% = lagging on `lagIndicatorTopic`.
-- `thoughts.ts` — DA-tailored thought-of-the-day pool, with morning/afternoon/evening variants.
+### Wiring
 
-## Widgets (iGoogle-style)
+- Extend `WidgetType` in `lib/storage.ts`: add `"pricingSim" | "anomalySpotter" | "creditScorecard"`.
+- Register them in `WidgetBoard.tsx` `META` + `renderWidget` switch and in `AddWidgetDialog.tsx` catalog.
+- Defaults stay as-is — new widgets are opt-in via "+ Add widget" so the board doesn't get crowded.
+- All new widgets write to existing `portfolio.progress` / `portfolio.lags` keys so the **Lagging Indicators** widget surfaces weak spots from them too.
 
-Each widget = `{ id, type, settings, order }` in `localStorage`. Catalog:
+### Design
 
-1. **Thought of the Day** — rotates daily from `thoughts.ts`, time-of-day variant.
-2. **Skills in Demand** — ranked list of DA skills with short blurbs.
-3. **Beginner Essentials vs Expertise** — picker for any skill → side-by-side checklist; user ticks items, ticks persist.
-4. **Interview Challenge** — draws a question from `challenges.ts` (cycle or skill-filtered), user types answer, grader scores it, lagging topics get pushed into…
-5. **Lagging Indicators** — auto-populated list of topics the user has been weak on, with a "recommended next drill" link to the matching essentials/expertise card.
-6. **My Projects** — user-editable text widgets. Each project = `{ title, oneLiner, link? }`. Add/remove inline; rendered as compact cards in a single widget.
-7. **Clock + Greeting** (small utility widget).
+Match current "analyst worksheet" aesthetic: paper cards, mono labels, amber accent, dashed rules. Sliders styled with cream track + ink thumb; sparkline as inline SVG using `var(--ink)` + `var(--accent)` for the anomaly marker. No new fonts, no new deps.
 
-Add/remove flow:
-- "+ Add widget" → dialog lists catalog items not yet on the board (Thought, Projects can be re-added if removed).
-- Each widget card has a drag handle and "×" remove. Order persists.
-- Responsive grid: 1 / 2 / 3 columns.
+### Files
 
-## Lagging-indicator logic (no AI)
-
-When the user submits an answer in the Challenge widget:
-1. Normalize → lowercase, strip punctuation.
-2. Compute keyword coverage against `expectedKeywords`.
-3. Update `portfolio.progress[skill]` with `{ attempts, passes, partials, lastLagTopics[] }`.
-4. If pass: streak++, XP+; if partial/fail: push `lagIndicatorTopic` to a rolling top-5 in `portfolio.lags`.
-5. Lagging Indicators widget reads `portfolio.lags` and renders chips + "Practice now" CTA that opens the relevant Essentials checklist.
-
-## localStorage keys
-
-- `portfolio.profile` — `{ name, role: "Data Analyst" }`
-- `portfolio.widgets` — ordered widget list
-- `portfolio.projects` — user-added project cards
-- `portfolio.checklist` — ticked items per skill (essentials/expertise)
-- `portfolio.progress` — per-skill stats
-- `portfolio.lags` — rolling lag-topic list
-
-## File layout
-
-```
-src/
-  routes/index.tsx
-  components/
-    dashboard/
-      WidgetBoard.tsx          // dnd-kit sortable grid
-      WidgetShell.tsx          // frame: title, drag handle, remove
-      AddWidgetDialog.tsx
-      Header.tsx
-    widgets/
-      ThoughtOfTheDay.tsx
-      SkillsInDemand.tsx
-      EssentialsVsExpertise.tsx
-      InterviewChallenge.tsx
-      LaggingIndicators.tsx
-      MyProjects.tsx
-      ClockGreeting.tsx
-  lib/
-    storage.ts                 // typed localStorage helpers
-    grader.ts                  // keyword-coverage scoring
-    content/
-      skills-in-demand.ts
-      skill-ladder.ts
-      challenges.ts
-      thoughts.ts
-  styles.css
-```
-
-## Design direction
-
-Distinctive, not generic. Proposed: **analyst's worksheet** aesthetic — soft cream background, deep navy ink, single warm accent (amber), monospaced numbers/keywords, subtle grid background reminiscent of a spreadsheet. Defined as semantic tokens in `src/styles.css`. Tell me if you'd rather have dark terminal or clean editorial; otherwise I'll build this.
-
-## Confirm before build
-
-- Design direction (analyst worksheet vs alternative)?
-- Anything else to add/remove from the widget catalog?
+Create: `src/components/widgets/PricingSim.tsx`, `AnomalySpotter.tsx`, `CreditScorecard.tsx`.
+Edit: `src/lib/storage.ts`, `src/lib/content/challenges.ts`, `skills-in-demand.ts`, `skill-ladder.ts`, `src/components/dashboard/WidgetBoard.tsx`, `AddWidgetDialog.tsx`.
