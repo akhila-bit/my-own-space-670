@@ -41,7 +41,15 @@ export function InterviewChallenge() {
   };
 
   const next = () => {
-    setIdx((i) => i + 1);
+    if (pool.length > 1) {
+      let n = idx;
+      while (n % pool.length === idx % pool.length) {
+        n = Math.floor(Math.random() * pool.length * 7) + idx + 1;
+      }
+      setIdx(n);
+    } else {
+      setIdx((i) => i + 1);
+    }
     setAnswer("");
     setResult(null);
     setShowModel(false);
